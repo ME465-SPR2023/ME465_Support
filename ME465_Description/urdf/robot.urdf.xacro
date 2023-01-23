@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<robot name="robot"
+       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Defines the kobuki component tag. -->
+  <xacro:include filename="$(find kobuki_description)/urdf/kobuki.urdf.xacro" />
+  <xacro:kobuki/>
+  <link name="lidar_link">
+    <inertial>
+      <mass value="0.01" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
+    </inertial>
+  </link>
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin rpy="0 0 0" xyz="0 0 0.12"/>
+  </joint>
+  <gazebo reference="lidar_link">
+    <sensor type="ray" name="rplidar">
+      <plugin name="gazebo_ros_lidar_controller" filename="libgazebo_ros_ray_sensor.so">
+        <output_type>sensor_msgs/LaserScan</output_type>
+        <body_name>lidar_link</body_name>
+        <frame_name>lidar_link</frame_name>
+        <ros>
+          <argument>~/out:=/scan</argument>
+        </ros>
+      </plugin>
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>100</samples>
+            <min_angle>-3.14</min_angle>
+            <max_angle>3.14</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.2</min>
+          <max>12</max>
+          <resolution>0.01</resolution>
+        </range>
+      </ray>
+    </sensor>
+  </gazebo>
+  <link name="camera_link">
+    <inertial>
+      <mass value="0.01" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+               iyy="0.001" iyz="0.0"
+               izz="0.001" />
+    </inertial>
+  </link>
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin rpy="0 0 0" xyz="0.12 0 0.12"/>
+  </joint>
+  <gazebo reference="camera_link">
+    <sensor type="camera" name="camera">
+      <plugin name="gazebo_ros_camera_controller" filename="libgazebo_ros_camera.so">
+        <updateRate>0.0</updateRate>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+      </plugin>
+      <update_rate>30.0</update_rate>
+      <camera name="camera">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>100</far>
+        </clip>
+      </camera>
+    </sensor>
+  </gazebo>
+  <gazebo>
+    <plugin name="gazebo_ros_joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+      <joint_name>wheel_left_joint</joint_name>
+      <joint_name>wheel_right_joint</joint_name>
+    </plugin>
+  </gazebo>
+</robot>
