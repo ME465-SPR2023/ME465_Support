@@ -5,11 +5,13 @@ from ament_index_python.packages import get_package_share_directory
 import os
 import xacro
 from tempfile import NamedTemporaryFile
+import yaml
 
 
 def generate_launch_description():
     sim_time = SetParameter(name="use_sim_time", value=True)
     sim_share = get_package_share_directory("ME465_Sim")
+    kobuki_description_share = get_package_share_directory("kobuki_description")
     gazebo = ExecuteProcess(
         cmd=[
             "gazebo",
@@ -19,7 +21,8 @@ def generate_launch_description():
             'libgazebo_ros_factory.so',
             '-s',
             'libgazebo_ros_init.so',
-        ]
+        ],
+        additional_env={"GAZEBO_MODEL_PATH": os.path.normpath(os.path.join(kobuki_description_share, ".."))},
     )
     building = Node(
         package="gazebo_ros",
@@ -31,7 +34,6 @@ def generate_launch_description():
             "panowicz_hall",
         ],
     )
-    kobuki_description_share = get_package_share_directory("kobuki_description")
     model_path = SetEnvironmentVariable(
         name="GAZEBO_MODEL_PATH",
         value=os.path.normpath(os.path.join(kobuki_description_share, "..")),
@@ -68,10 +70,22 @@ def generate_launch_description():
             "robot",
         ],
     )
+    params_file = os.path.join(sim_share, "config", "sim.yaml")
+    with open(params_file) as f:
+        params = yaml.safe_load(f)["cmd_vel_mux"]["ros__parameters"]
+    vel_mux = Node(
+        package="cmd_vel_mux",
+        executable="cmd_vel_mux_node",
+        remappings=[
+            ("/cmd_vel", "/commands/velocity"),
+        ],
+        parameters=[params],
+    )
     return LaunchDescription([
         sim_time,
-        model_path,
+        # model_path,
         gazebo,
         building,
         robot,
+        vel_mux,
     ])

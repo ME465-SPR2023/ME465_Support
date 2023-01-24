@@ -1,0 +1,13 @@
+cmd_vel_mux:
+  ros__parameters:
+    subscribers:
+      control_input:
+        topic:       "/ctrl_vel"
+        timeout:     0.1
+        priority:    0
+        short_desc:  "Input from control system"
+      teleop_input:
+        topic:       "/teleop_vel"
+        timeout:     0.2
+        priority:    1
+        short_desc:  "Teleoperation input"
