@@ -28,10 +28,10 @@ def generate_launch_description():
         package="gazebo_ros",
         executable="spawn_entity.py",
         arguments=[
-            "-f",
-            os.path.join(sim_share, "urdf", "panowicz_hall.sdf"),
-            "-entity",
-            "panowicz_hall",
+            "-f", os.path.join(sim_share, "urdf", "panowicz_hall.sdf"),
+            "-entity", "panowicz_hall",
+            "-x", "2.5",
+            "-y", "2.5",
         ],
     )
     model_path = SetEnvironmentVariable(
@@ -64,10 +64,10 @@ def generate_launch_description():
         package="gazebo_ros",
         executable="spawn_entity.py",
         arguments=[
-            "-f",
-            urdf_file.name,
-            "-entity",
-            "robot",
+            "-f", urdf_file.name,
+            "-entity", "robot",
+            "-x", "2.5",
+            "-y", "2.5",
         ],
     )
     params_file = os.path.join(sim_share, "config", "sim.yaml")
