@@ -87,7 +87,7 @@
           <layer>0</layer>
         </meta>
       </visual>
-      <pose>-3.53592 -3.86501 0 0 -0 -1.5708</pose>
+      <pose>-3.535 -3.875 0 0 -0 -1.5708</pose>
     </link>
     <link name='Wall_12'>
       <collision name='Wall_12_Collision'>
@@ -786,5 +786,17 @@
       <pose>1.5 -1.95 0 0 -0 3.14159</pose>
     </link>
     <static>1</static>
+    <include>
+      <uri>model://Apriltag36_11_00000</uri>
+      <pose>-1.5 0.125 0.5 1.57 0 0</pose>
+    </include>
+    <include>
+      <uri>model://Apriltag36_11_00001</uri>
+      <pose>-3 0.125 0.5 1.57 0 0</pose>
+    </include>
+    <include>
+      <uri>model://Apriltag36_11_00002</uri>
+      <pose>0.5 0.125 0.5 1.57 0 0</pose>
+    </include>
   </model>
 </sdf>

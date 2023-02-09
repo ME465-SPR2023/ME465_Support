@@ -17,26 +17,32 @@ def generate_launch_description():
             "gazebo",
             "--verbose",
             os.path.join(sim_share, "urdf", "world.sdf"),
-            '-s',
-            'libgazebo_ros_factory.so',
-            '-s',
-            'libgazebo_ros_init.so',
+            "-s",
+            "libgazebo_ros_factory.so",
+            "-s",
+            "libgazebo_ros_init.so",
         ],
-        additional_env={"GAZEBO_MODEL_PATH": os.path.normpath(os.path.join(kobuki_description_share, ".."))},
+        additional_env={
+            "GAZEBO_MODEL_PATH": os.environ.get("GAZEBO_MODEL_PATH", "")
+            + os.pathsep
+            + os.path.normpath(os.path.join(kobuki_description_share, ".."))
+            + os.pathsep
+            + os.path.join(sim_share, "model"),
+        },
     )
     building = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",
         arguments=[
-            "-f", os.path.join(sim_share, "urdf", "panowicz_hall.sdf"),
-            "-entity", "panowicz_hall",
-            "-x", "2.5",
-            "-y", "2.5",
+            "-f",
+            os.path.join(sim_share, "urdf", "panowicz_hall.sdf"),
+            "-entity",
+            "panowicz_hall",
+            "-x",
+            "2.5",
+            "-y",
+            "2.5",
         ],
-    )
-    model_path = SetEnvironmentVariable(
-        name="GAZEBO_MODEL_PATH",
-        value=os.path.normpath(os.path.join(kobuki_description_share, "..")),
     )
     description_share = get_package_share_directory("ME465_Description")
     global urdf_file
@@ -45,8 +51,10 @@ def generate_launch_description():
         def __init__(self, filename, *args, **kwargs):
             self.file = open(filename, *args, **kwargs)
             self.name = filename
+
         def __getattr__(self, name):
             return getattr(self.file, name)
+
     urdf_file = URDF_File("/tmp/robot_description.urdf", "wb")
     urdf_file.write(
         bytes(
@@ -64,10 +72,14 @@ def generate_launch_description():
         package="gazebo_ros",
         executable="spawn_entity.py",
         arguments=[
-            "-f", urdf_file.name,
-            "-entity", "robot",
-            "-x", "2.5",
-            "-y", "2.5",
+            "-f",
+            urdf_file.name,
+            "-entity",
+            "robot",
+            "-x",
+            "2",
+            "-y",
+            "2",
         ],
     )
     params_file = os.path.join(sim_share, "config", "sim.yaml")
@@ -81,11 +93,12 @@ def generate_launch_description():
         ],
         parameters=[params],
     )
-    return LaunchDescription([
-        sim_time,
-        # model_path,
-        gazebo,
-        building,
-        robot,
-        vel_mux,
-    ])
+    return LaunchDescription(
+        [
+            sim_time,
+            gazebo,
+            building,
+            robot,
+            vel_mux,
+        ]
+    )
