@@ -1,4 +1,4 @@
-image: sim.pgm
+image: sim_edited.pgm
 mode: trinary
 resolution: 0.05
 origin: [-4.31, -3.03, 0]
